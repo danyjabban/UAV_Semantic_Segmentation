@@ -20,32 +20,32 @@ class MyDataset(Dataset):
         self.target_files = os.listdir(target_paths)
         self.image_paths = image_paths
         self.target_paths = target_paths
+        self.train = train
 
     def transform(self, image, mask):
 
+        if self.train:
+            # Random crop
+            if random.random() > 0.5:
+                i, j, h, w = T.RandomCrop.get_params(
+                    image, output_size=(2000, 1300))
+                image = TF.crop(image, i, j, h, w)
+                mask = TF.crop(mask, i, j, h, w)
+
+            # Random horizontal flipping
+            if random.random() > 0.5:
+                image = TF.hflip(image)
+                mask = TF.hflip(mask)
+
+            # Random vertical flipping
+            if random.random() > 0.5:
+                image = TF.vflip(image)
+                mask = TF.vflip(mask)
             
-        # Random crop
-        if random.random() > 0.5:
-            i, j, h, w = T.RandomCrop.get_params(
-                image, output_size=(2000, 1300))
-            image = TF.crop(image, i, j, h, w)
-            mask = TF.crop(mask, i, j, h, w)
-
-        # Random horizontal flipping
-        if random.random() > 0.5:
-            image = TF.hflip(image)
-            mask = TF.hflip(mask)
-
-        # Random vertical flipping
-        if random.random() > 0.5:
-            image = TF.vflip(image)
-            mask = TF.vflip(mask)
-        
-
-        # Resize
-        resize = T.Resize(size=(2200, 1550))
-        image = resize(image)
-        mask = resize(mask)
+            # Resize
+            resize = T.Resize(size=(2200, 1550))
+            image = resize(image)
+            mask = resize(mask)
 
         # Transform to tensor
         image = TF.to_tensor(image)
@@ -53,7 +53,6 @@ class MyDataset(Dataset):
 
         return image, mask
     
-
 
     def __getitem__(self, index):
         #print(self.target_files[index])
@@ -105,7 +104,7 @@ class transformed_data(Dataset):
 
 if __name__ == '__main__':
     in_dir_im, in_dir_mask = 'data/inputs_small/', 'data/semantic_annotations_small/'
-    out_dir_im, out_dir_mask = 'data/inputs_transformed/', 'data/semantic_annotations_transformed/'
+    #out_dir_im, out_dir_mask = 'data/inputs_transformed/', 'data/semantic_annotations_transformed/'
 
 
     data_set = MyDataset(in_dir_im, in_dir_mask)
