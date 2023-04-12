@@ -36,9 +36,30 @@ class SegmentationMetric():
         dw = dice_weighted(self.pred, self.target)
 
         return dpc, dw
+    
+
+def convert_binary_safe(t, map):
+    if (0 in map[1]) and (1 in map[0]):
+        t = torch.where(t==0, -1, t)
+        t = torch.where(t==1, 0, t)
+        t = torch.where(t==-1, 1, t)
+    elif 1 in map[0]:
+        t = torch.where(t==1, 0, False)
+    elif 0 in map[1]:
+        t = torch.where(t==0, 1, False)
+    for i in map[0]: 
+        if i not in [0,1]:
+            t = torch.where(t==i, 0, t)
+    t = torch.where(t != 0, 1, t)
+    print(t)
+    
+
+
+    pass
 
 
 if __name__ == '__main__':
+    # Test semantic segmentation metrics
     target = torch.randint(0, 2, (10, 25, 25)) # create target tensor: num_masks x h x w
     pred = target.clone().detach() # create pred tensor: num_masks x h x w
     pred[2:5, 7:13, 9:15] = 1 - pred[2:5, 7:13, 9:15] # modify preds slightly
@@ -51,4 +72,12 @@ if __name__ == '__main__':
 
     cm = segmet.confusion_matrix()
     print(cm)
+
+    # dummy input for binary convert map
+    t = torch.randint(0, 5, (2, 5, 5))
+    print(t)
+    bin_map = {0:[1, 3], 1:[0,2,4]}
+    convert_binary_safe(t, bin_map)
+
+
 
