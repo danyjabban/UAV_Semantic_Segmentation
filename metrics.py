@@ -4,6 +4,8 @@ Metrics for model performance analysis
 
 import torch
 from torchmetrics import JaccardIndex, ConfusionMatrix, F1Score
+import numpy as np
+import pandas as pd
 
 class SegmentationMetric():
     def __init__(self, pred, target, indices):
@@ -14,16 +16,16 @@ class SegmentationMetric():
         
     def jaccard(self):
         jaccard_per_class = JaccardIndex(task="multiclass", num_classes=self.num_classes, average='none') 
-        jpc = jaccard_per_class(self.pred, self.target)[self.indices]
+        jpc = jaccard_per_class(self.pred, self.target)#[self.indices]
 
-        jaccard_weighted = JaccardIndex(task="multiclass", num_classes=self.num_classes, average='weighted') 
+        jaccard_weighted = JaccardIndex(task="multiclass", num_classes=self.num_classes, average='macro') 
         jw = jaccard_weighted(self.pred, self.target)
 
         return jpc, jw
 
     def confusion_matrix(self):
         conf_mat = ConfusionMatrix(task='multiclass', num_classes=self.num_classes)
-        cm = conf_mat(self.pred, self.target)[self.indices, :][self.indices, :]
+        cm = conf_mat(self.pred, self.target)#[self.indices, :][self.indices, :]
 
         return cm
 
@@ -31,10 +33,19 @@ class SegmentationMetric():
         dice_per_class = F1Score(task='multiclass', num_classes=self.num_classes, average='none')
         dpc = dice_per_class(self.pred, self.target)[self.indices]
 
-        dice_weighted = F1Score(task='multiclass', num_classes=self.num_classes, average='weighted')
+        dice_weighted = F1Score(task='multiclass', num_classes=self.num_classes, average='macro')
         dw = dice_weighted(self.pred, self.target)
 
         return dpc, dw
+    
+    def check_label_present(self):
+        check = torch.zeros(self.num_classes)
+        for i in self.indices:
+            if i in self.target:
+                check[i] = 1
+        return check
+
+
     
 
 def convert_binary_safe(t, map):
@@ -67,6 +78,8 @@ def compute_metrics(pred_list, trgt_list, indices, map):
     dice_per_class_bin = 0
     dice_weighted_bin = 0
 
+    check_label = torch.zeros(indices.shape[0])
+
     for pred, trgt in zip(pred_list, trgt_list):
        
         seg_met = SegmentationMetric(pred, trgt, indices)
@@ -77,9 +90,11 @@ def compute_metrics(pred_list, trgt_list, indices, map):
 
         confusion_matrix = confusion_matrix + seg_met.confusion_matrix()
 
-        dice_per_class_i, dice_weighted_i = seg_met.jaccard()
+        dice_per_class_i, dice_weighted_i = seg_met.dice()
         dice_per_class = dice_per_class + dice_per_class_i
         dice_weighted = dice_weighted + dice_weighted_i
+
+        check_label = check_label + seg_met.check_label_present()
 
         pred = convert_binary_safe(pred, map)
         trgt = convert_binary_safe(trgt, map)
@@ -92,12 +107,14 @@ def compute_metrics(pred_list, trgt_list, indices, map):
 
         confusion_matrix_bin = confusion_matrix_bin + seg_met_bin.confusion_matrix()
 
-        dice_per_class_bin_i, dice_weighted_bin_i = seg_met_bin.jaccard()
+        dice_per_class_bin_i, dice_weighted_bin_i = seg_met_bin.dice()
         dice_per_class_bin = dice_per_class_bin + dice_per_class_bin_i
         dice_weighted_bin = dice_weighted_bin + dice_weighted_bin_i
 
-    multi_class = (jaccard_per_class, jaccard_weighted, confusion_matrix, dice_per_class, dice_weighted)
-    binary_class = (jaccard_per_class_bin, jaccard_weighted_bin, confusion_matrix_bin, dice_per_class_bin, dice_weighted_bin)
+    multi_class = (torch.div(jaccard_per_class, check_label), jaccard_weighted/len(pred_list), 
+                   confusion_matrix, torch.div(dice_per_class, check_label), dice_weighted/len(pred_list))
+    binary_class = (jaccard_per_class_bin/len(pred_list), jaccard_weighted_bin/len(pred_list), 
+                    confusion_matrix_bin, dice_per_class_bin/len(pred_list), dice_weighted_bin/len(pred_list))
 
     return multi_class, binary_class
     
@@ -108,22 +125,26 @@ if __name__ == '__main__':
     
     bin_map = {0: [0, 3, 4, 5, 6, 7, 8, 9], 1:[1, 2, 10, 11, 12, 13, 14, 15]}
 
-    bin_map = {0:[0,1], 1:[2,3,4]}
 
-    l = []
-    for i in range(1000):
-        target = torch.randint(0, 5, (2200, 1500)) # create target tensor: num_masks x h x w
-        l.append(target)
+    pred_list = torch.load('masked_list_resnet18.pt', map_location=torch.device('cpu'))
 
-    l2 = l.copy()
+    target_list = torch.load('ground_truth_list_resnet18.pt')
 
-    
+    indices = torch.arange(17)
 
-    indices = torch.tensor([0,1,2,3,4])
-
-    multi_class, binary_class = compute_metrics(l, l2, indices, map=bin_map)
+    multi_class, binary_class = compute_metrics(pred_list, target_list, indices, map=bin_map)
 
     jaccard_per_class, jaccard_weighted, confusion_matrix, dice_per_class, dice_weighted = multi_class
+    print(jaccard_per_class, 'jaccard_per_class')
+    print(jaccard_weighted, 'jaccard_weighted')
+    print(confusion_matrix, 'confusion_matrix')
+    print(dice_per_class, 'dice_per_class')
+    print(dice_weighted, 'dice_weighted')
+    confusion_matrix = confusion_matrix.numpy()
+    confusion_matrix = pd.DataFrame(confusion_matrix)
+    confusion_matrix.to_csv('resnet_cm_multi.csv')
+
+    jaccard_per_class, jaccard_weighted, confusion_matrix, dice_per_class, dice_weighted = binary_class
     print(jaccard_per_class, 'jaccard_per_class')
     print(jaccard_weighted, 'jaccard_weighted')
     print(confusion_matrix, 'confusion_matrix')
@@ -134,25 +155,3 @@ if __name__ == '__main__':
 
 
 
-
-
-
-    # # Test semantic segmentation metrics
-    # target = torch.randint(0, 2, (10, 25, 25)) # create target tensor: num_masks x h x w
-    # pred = target.clone().detach() # create pred tensor: num_masks x h x w
-    # pred[2:5, 7:13, 9:15] = 1 - pred[2:5, 7:13, 9:15] # modify preds slightly
-
-    # indices = torch.tensor([0,1]), torch.tensor([0,2]) + torch.tensor([0,1]), torch.tensor([0,2])
-    # print(indices)
-    # # a = indices.max().int() + 1
-    
-    # # segmet = SegmentationMetric(pred, target, indices)
-
-    # # cm = segmet.jaccard()
-    # # print(cm)
-
-    # # # # dummy input for binary convert map
-    # # # t = torch.randint(0, 5, (2, 5, 5))
-    # # # print(t)
-    # # # bin_map = {0:[1, 3], 1:[0,2,4]}
-    # # # convert_binary_safe(t, bin_map)
