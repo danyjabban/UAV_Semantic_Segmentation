@@ -8,6 +8,10 @@ import numpy as np
 import pandas as pd
 
 class SegmentationMetric():
+    '''
+    class that takes predictions and target masks
+    allows you to compute different semantic segmetation metrics
+    '''
     def __init__(self, pred, target, indices):
         self.pred = pred 
         self.target = target
@@ -15,9 +19,11 @@ class SegmentationMetric():
         self.num_classes = indices.max().item() + 1
         
     def jaccard(self):
+        # individual class iou
         jaccard_per_class = JaccardIndex(task="multiclass", num_classes=self.num_classes, average='none') 
         jpc = jaccard_per_class(self.pred, self.target)#[self.indices]
-
+        
+        # mean iou
         jaccard_weighted = JaccardIndex(task="multiclass", num_classes=self.num_classes, average='macro') 
         jw = jaccard_weighted(self.pred, self.target)
 
@@ -30,15 +36,18 @@ class SegmentationMetric():
         return cm
 
     def dice(self):
+        # individual class dice
         dice_per_class = F1Score(task='multiclass', num_classes=self.num_classes, average='none')
         dpc = dice_per_class(self.pred, self.target)[self.indices]
-
+        
+        # mean dice
         dice_weighted = F1Score(task='multiclass', num_classes=self.num_classes, average='macro')
         dw = dice_weighted(self.pred, self.target)
 
         return dpc, dw
     
     def check_label_present(self):
+        # helper function to see if what labels are present in a given mask
         check = torch.zeros(self.num_classes)
         for i in self.indices:
             if i in self.target:
@@ -49,6 +58,7 @@ class SegmentationMetric():
     
 
 def convert_binary_safe(t, map):
+    # function to convert multiclass mask into binary mask
     if (0 in map[1]) and (1 in map[0]):
         t = torch.where(t==0, -1, t)
         t = torch.where(t==1, 0, t)
@@ -66,6 +76,7 @@ def convert_binary_safe(t, map):
 
 
 def compute_metrics(pred_list, trgt_list, indices, map):
+    # main function
     jaccard_per_class = 0
     jaccard_weighted = 0
     confusion_matrix = 0
@@ -79,9 +90,10 @@ def compute_metrics(pred_list, trgt_list, indices, map):
     dice_weighted_bin = 0
 
     check_label = torch.zeros(indices.shape[0])
-
-    for pred, trgt in zip(pred_list, trgt_list):
-       
+    
+    # iterate through target and prediction masks list
+    for pred, trgt in zip(pred_list, trgt_list):    
+        # compute multiclass metrics
         seg_met = SegmentationMetric(pred, trgt, indices)
         jaccard_per_class_i, jaccard_weighted_i = seg_met.jaccard()
         
@@ -95,10 +107,12 @@ def compute_metrics(pred_list, trgt_list, indices, map):
         dice_weighted = dice_weighted + dice_weighted_i
 
         check_label = check_label + seg_met.check_label_present()
-
+        
+        # convert multi class to binary
         pred = convert_binary_safe(pred, map)
         trgt = convert_binary_safe(trgt, map)
-
+        
+        # compute binary class metrics
         seg_met_bin = SegmentationMetric(pred, trgt, torch.tensor([0,1]))
         jaccard_per_class_bin_i, jaccard_weighted_bin_i = seg_met_bin.jaccard()
         
@@ -123,11 +137,13 @@ def compute_metrics(pred_list, trgt_list, indices, map):
 
 if __name__ == '__main__':
     
+    # binary conversion map
     bin_map = {0: [0, 3, 4, 5, 6, 7, 8, 9], 1:[1, 2, 10, 11, 12, 13, 14, 15]}
 
-
+    # load predictions
     pred_list = torch.load('masked_list_resnet18.pt', map_location=torch.device('cpu'))
 
+    # load ground truth
     target_list = torch.load('ground_truth_list_resnet18.pt')
 
     indices = torch.arange(17)
@@ -142,7 +158,8 @@ if __name__ == '__main__':
     print(dice_weighted, 'dice_weighted')
     confusion_matrix = confusion_matrix.numpy()
     confusion_matrix = pd.DataFrame(confusion_matrix)
-    confusion_matrix.to_csv('resnet_cm_multi.csv')
+    # store confusin matrix
+    confusion_matrix.to_csv('resnet_cm_multi.csv') 
 
     jaccard_per_class, jaccard_weighted, confusion_matrix, dice_per_class, dice_weighted = binary_class
     print(jaccard_per_class, 'jaccard_per_class')
