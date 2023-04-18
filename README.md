@@ -14,7 +14,13 @@ The ethics and safety of UAVs have been called into question for some time, but 
 The preprocess.py script contains a torch dataset subclass that performs the appropriate data augmentations. takes in 2 inputs, image directory and annotation directory.
 
 
-Zhanyi add your descrptions of ur files (run models to get outputs which are lists of tensors and save them as .pt files)
+There are several well-known deep learning models for image classification, including Vgg-16, ResNet18, and MobileNet_v3.
+
+Vgg-16 was first published by Karen Simonyan and Andrew Zisserman from the University of Oxford, and its original paper can be found at https://arxiv.org/abs/1409.1556v6. It is a deep convolutional neural network with 16 layers that achieved state-of-the-art performance on the ImageNet dataset at the time of its release.
+
+ResNet18 is another popular image classification model published by Microsoft Research Asia, with its original paper available at https://arxiv.org/abs/1512.03385. It introduced the concept of residual connections, which allowed for the creation of much deeper neural networks that were easier to train and had higher accuracy.
+
+MobileNet_v3 was published by Google and is designed for efficient image classification on mobile and embedded devices. Its original paper can be found at https://arxiv.org/abs/1905.02244. MobileNet_v3 uses a combination of depthwise separable convolutions, linear bottlenecks, and other techniques to achieve high accuracy while maintaining a low computational footprint.
 
 
 The metrics.py script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
