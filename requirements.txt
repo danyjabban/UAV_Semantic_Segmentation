@@ -1,0 +1,8 @@
+torch
+torchmetrics
+pandas 
+numpy
+torchvision
+matplotlib
+PIL
+
