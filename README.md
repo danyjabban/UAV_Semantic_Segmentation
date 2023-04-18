@@ -6,6 +6,8 @@ This repo contains models and analysis tools for semantic segmentation of aerial
 
 The ethics and safety of UAVs have been called into question for some time, but with so much environmental and social upside, developing safe flying and landing is of the utmost importance. In order to enhance drone safety, our research is concerned with applying state of the art deep learning models to solve semantic segmentation of drone cameras. To evaluate the performance of our models we used several metrics common in semantic segmentation problems including the jaccard index and dice score and confusion matrices. This repo contains the models as well as tools developed for easy analysis of the models performance. 
 
+<img width="1019" alt="proj1_diagram" src="proj4_flowchart.png">
+
 
 ## Scripts and uses:
 
