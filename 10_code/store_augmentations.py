@@ -68,6 +68,7 @@ class MyDataset(Dataset):
     
 
 def save_transData(in_dir_im, in_dir_mask, out_dir_im, out_dir_mask):
+    # function to save augmentated data in case dataset is too large
     dataset_list = []
     mydataset = MyDataset(in_dir_im, in_dir_mask)
     for i in range(len(os.listdir(in_dir_im))):
@@ -79,6 +80,9 @@ def save_transData(in_dir_im, in_dir_mask, out_dir_im, out_dir_mask):
     
 
 class transformed_data(Dataset):
+    '''
+    class to handle downloaded augmentations
+    '''
   def __init__(self, img, mask):
     self.img = img  #img path
     self.mask = mask  #mask path
