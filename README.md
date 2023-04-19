@@ -37,7 +37,7 @@ If you want to *reproduce the models*, please refer to those codes (jupyter note
 4. [MobileNetv3_large_100](30_results/Models/Unet-Mobilenet_large100.pt)
 
 Examine the established outputs:
-[This zip contains the output masks for MobileNet_large100](30_results/MobileNet_v3_data/masked_list_MobileNet_v3.pt.zip)
+[This zip contains the output masks for MobileNet_large100 in .pt format](30_results/MobileNet_v3_data/masked_list_MobileNet_v3.pt.zip)
 
 
 The [metrics.py](10_code/metrics.py) script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
