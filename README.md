@@ -30,7 +30,7 @@ Load the model with
 If the environment lacks of GPU, please add `map_location=torch.device("cuda")`\
 If the environment chip is M1, please add `map_location=torch.device("mps")`
 
-If you want to reproduce the models, please refer to those codes (jupyter notebook):\
+If you want to reproduce the models, please refer to those codes (jupyter notebook):
 1. [vgg-16](30_results/Models/Unet-vgg16_22.pt)
 2. [ResNet18](30_results/Models/Unet-resnet18_2.pt)
 3. [MobileNetv2](30_results/Models/Unet-Mobilenet_v2_mIoU-0.437.pt)
