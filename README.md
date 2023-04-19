@@ -45,3 +45,5 @@ The [metrics.py](10_code/metrics.py) script computes all the metrics using the p
 ## Reference:
 
 Iakubovskii, P. (2019). Segmentation Models Pytorch [GitHub repository](https://github.com/qubvel/segmentation_models.pytorch#readme). GitHub. Retrieved from https://github.com/qubvel/segmentation_models.pytorch
+
+GAUTAM, T. (2021). [Semantic Segmentation is Easy with Pytorch 😎](https://www.kaggle.com/code/ligtfeather/semantic-segmentation-is-easy-with-pytorch). Kaggle. Retrieved from https://www.kaggle.com/code/ligtfeather/semantic-segmentation-is-easy-with-pytorch
