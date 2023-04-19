@@ -27,7 +27,7 @@ There are several well-known deep learning models for image classification, incl
 
 `model = torch.load("your-local-path/moblenetv3/Unet-Mobilenet_large100.pt")`
 
-If the environment lacks of GPU, please add `map_location=torch.device("cuda")`\
+If the environment lacks of GPU, please add `map_location=torch.device("cpu")`\
 If the environment chip is M1, please add `map_location=torch.device("mps")`
 
 If you want to *reproduce the models*, please refer to those codes (jupyter notebook):
