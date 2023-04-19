@@ -27,7 +27,8 @@ Load the model with
 
 `model = torch.load("your-local-path/moblenetv3/Unet-Mobilenet_large100.pt")`
 
-if the environment 
+if the environment lacks of GPU, please add `map_location=torch.device("cuda")`
+if the environment chip is M1, please add `map_location=torch.device("mps")`
 
 
 The metrics.py script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
