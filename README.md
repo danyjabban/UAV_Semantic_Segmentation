@@ -41,3 +41,7 @@ Examine the established outputs:
 
 
 The [metrics.py](10_code/metrics.py) script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
+
+## Reference:
+
+Iakubovskii, P. (2019). Segmentation Models Pytorch [GitHub repository]. GitHub. Retrieved from https://github.com/qubvel/segmentation_models.pytorch
