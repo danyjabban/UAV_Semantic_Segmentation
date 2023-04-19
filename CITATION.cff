@@ -1,4 +1,4 @@
-sc{Iakubovskii:2019,
+@misc{Iakubovskii:2019,
   Author = {Pavel Iakubovskii},
   Title = {Segmentation Models Pytorch},
   Year = {2019},
