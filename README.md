@@ -25,7 +25,7 @@ There are several well-known deep learning models for image classification, incl
 
 Load the model with 
 
-`model = torch.load("your-local-path/moblenetv3/Unet-Mobilenet_large100.pt",map_location=torch.device("cuda"))`
+`model = torch.load("your-local-path/moblenetv3/Unet-Mobilenet_large100.pt")`
 
 
 The metrics.py script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
