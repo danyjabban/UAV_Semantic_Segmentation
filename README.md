@@ -11,7 +11,7 @@ The ethics and safety of UAVs have been called into question for some time, but 
 
 ## Scripts and uses:
 
-The preprocess.py script contains a torch dataset subclass that performs the appropriate data augmentations. takes in 2 inputs, image directory and annotation directory.
+The [preprocess.py](10_code/preprocess.py) script contains a torch dataset subclass that performs the appropriate data augmentations. takes in 2 inputs, image directory and annotation directory.
 
 
 
@@ -40,4 +40,4 @@ Examine the established outputs:
 [This zip contains the output masks for MobileNet_large100](30_results/MobileNet_v3_data/masked_list_MobileNet_v3.pt.zip)
 
 
-The metrics.py script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
+The [metrics.py](10_code/metrics.py) script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
