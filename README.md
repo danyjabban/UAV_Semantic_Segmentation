@@ -41,3 +41,12 @@ Examine the established outputs:
 
 
 The [metrics.py](10_code/metrics.py) script computes all the metrics using the predictions and ground truth. This requires two .pt files which are lists of mask tensors.
+
+@misc{Iakubovskii:2019,
+  Author = {Pavel Iakubovskii},
+  Title = {Segmentation Models Pytorch},
+  Year = {2019},
+  Publisher = {GitHub},
+  Journal = {GitHub repository},
+  Howpublished = {\url{https://github.com/qubvel/segmentation_models.pytorch}}
+}
