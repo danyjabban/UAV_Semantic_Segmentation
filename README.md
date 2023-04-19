@@ -44,4 +44,4 @@ The [metrics.py](10_code/metrics.py) script computes all the metrics using the p
 
 ## Reference:
 
-Iakubovskii, P. (2019). Segmentation Models Pytorch [GitHub repository]. GitHub. Retrieved from https://github.com/qubvel/segmentation_models.pytorch
+Iakubovskii, P. (2019). Segmentation Models Pytorch [GitHub repository](https://github.com/qubvel/segmentation_models.pytorch#readme). GitHub. Retrieved from https://github.com/qubvel/segmentation_models.pytorch
