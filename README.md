@@ -11,7 +11,7 @@ The ethics and safety of UAVs have been called into question for some time, but 
 
 ## Scripts and uses:
 
-The [preprocess.py](10_code/preprocess.py) script contains a torch dataset subclass that performs the appropriate data augmentations. takes in 2 inputs, image directory and annotation directory.
+The [preprocess.py](10_code/Data_Processing/preprocess.py) script contains a torch dataset subclass that performs the appropriate data augmentations. takes in 2 inputs, image directory and annotation directory.
 
 
 
